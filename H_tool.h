@@ -24,6 +24,10 @@
 
 ////////////////////////////////
 
+#define H_tool_start()\
+	H_tool_start:\
+	print_clear()
+
 #define system_tool_exists( NAME ) ( system( PICK( OS_LINUX, "command -v " #NAME " >/dev/null", "where " #NAME " >nul" ) " 2>&1" ) is 0 )
 
 ////////////////////////////////
@@ -57,18 +61,32 @@ global n1 current_input = 0;
 		}\
 	}
 
-////////
-// input handling
-
-#define input_next()\
+#define inputs_next()\
 	START_DEF\
 	{\
 		++current_input;\
-		jump process_input;\
+		jump H_tool_start;\
 	}\
 	END_DEF
 
-#define check_input( NAME, BYTES, BYTES_SIZE )\
+#define inputs_insert( INPUTS, INPUTS_COUNT )\
+	START_DEF\
+	{\
+		temp const n1 insert_pos = current_input + 1;\
+		iter_inv( i, inputs_count - insert_pos )\
+		{\
+			temp const n1 pos = insert_pos + i - 1;\
+			bytes_paste( inputs[ pos + INPUTS_COUNT ], inputs[ pos ] );\
+		}\
+		iter( i, INPUTS_COUNT )\
+		{\
+			bytes_paste( inputs[ insert_pos + i ], INPUTS[ i ] );\
+		}\
+		inputs_count += INPUTS_COUNT;\
+	}\
+	END_DEF
+
+#define input_check( NAME, BYTES, BYTES_SIZE )\
 	START_DEF\
 	{\
 		if( inputs[ current_input ][ 0 ] isnt '\0' and bytes_compare( inputs[ current_input ], BYTES, BYTES_SIZE + 1 ) )\
@@ -77,14 +95,10 @@ global n1 current_input = 0;
 			message_parts_add( format_magenta "did you mean `" format_yellow );\
 			message_parts_add( BYTES );\
 			message_parts_add( format_magenta "`?" );\
-			input_next();\
+			inputs_next();\
 		}\
 	}\
 	END_DEF
-
-#define H_tool_start()\
-	process_input:\
-	print_clear()
 
 fn get_inputs()
 {
