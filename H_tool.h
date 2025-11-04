@@ -43,7 +43,7 @@ global n1 message_parts_count = 0;
 ////////////////////////////////
 /// user input
 
-#define max_inputs_count 16
+#define max_inputs_count 32
 #define max_input_size 32
 global byte inputs[ max_inputs_count ][ max_input_size ];
 global n1 inputs_count = 0;
