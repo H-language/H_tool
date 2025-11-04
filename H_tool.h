@@ -89,7 +89,7 @@ global n1 current_input = 0;
 #define input_check( NAME, BYTES, BYTES_SIZE )\
 	START_DEF\
 	{\
-		if( inputs[ current_input ][ 0 ] isnt '\0' and bytes_compare( inputs[ current_input ], BYTES, BYTES_SIZE + 1 ) )\
+		if( inputs[ current_input ][ 0 ] isnt eof_byte and bytes_compare( inputs[ current_input ], BYTES, BYTES_SIZE + 1 ) )\
 		{\
 			message_parts_count = 0;\
 			message_parts_add( format_magenta "did you mean `" format_yellow );\
@@ -102,7 +102,7 @@ global n1 current_input = 0;
 
 fn get_inputs()
 {
-	if( inputs[ current_input ][ 0 ] is '\0' )
+	if( inputs[ current_input ][ 0 ] is eof_byte )
 	{
 		iter( i, inputs_count )
 		{
@@ -120,7 +120,7 @@ fn get_inputs()
 			temp byte input_byte = val_of( print_input );
 			with( input_byte )
 			{
-				when( '\0', ' ', '\t', '\r', '\n' )
+				when( eof_byte, ' ', tab_byte, '\r', newline_byte )
 				{
 					if( input_ref isnt input )
 					{
@@ -129,7 +129,7 @@ fn get_inputs()
 						input_ref = input;
 					}
 
-					if( input_byte is '\0' )
+					if( input_byte is eof_byte )
 					{
 						skip;
 					}
