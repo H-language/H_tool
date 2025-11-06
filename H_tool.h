@@ -24,10 +24,6 @@
 
 ////////////////////////////////
 
-#define H_tool_start()\
-	H_tool_start:\
-	print_clear()
-
 #define system_tool_exists( NAME ) ( system( PICK( OS_LINUX, "command -v " #NAME " >/dev/null", "where " #NAME " >nul" ) " 2>&1" ) is 0 )
 
 ////////////////////////////////
@@ -44,7 +40,7 @@ global n1 message_parts_count = 0;
 /// user input
 
 #define max_inputs_count 32
-#define max_input_size 32
+#define max_input_size max_path_size
 global byte inputs[ max_inputs_count ][ max_input_size ];
 global n1 inputs_count = 0;
 global n1 current_input = 0;
@@ -196,5 +192,13 @@ fn get_inputs()
 		message_parts_count = 0;\
 		print_newline();\
 	}
+
+////////////////////////////////
+
+#define H_tool_start()\
+	inputs_collect_start_parameters();\
+	H_tool_start:\
+	print_clear();\
+	print_message()
 
 ////////////////////////////////////////////////////////////////
